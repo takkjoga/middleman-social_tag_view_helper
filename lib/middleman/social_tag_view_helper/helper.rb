@@ -5,6 +5,10 @@ module Middleman
         _site_url ||= site_url
         _site_title ||= site_title
         _site_description ||= site_description
+        if is_blog_article?
+          page_type = "article"
+          _site_url += "/#{current_article.url}"
+        end
         %Q|<meta property="og:type" content="#{page_type}">
 <meta property="og:url" content="#{_site_url}">
 <meta property="og:title" content="#{page_title}">
@@ -29,6 +33,8 @@ module Middleman
 
       def facebook_share_button(_facebook_app_id = nil)
         _facebook_app_id ||= facebook_app_id
+        _site_url = site_url
+        _site_url += "/#{current_article.url}" if is_blog_article?
         %Q|<script>
   window.fbAsyncInit = function() {
     FB.init({
