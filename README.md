@@ -37,7 +37,7 @@ into head tag
 
 into layout file
 ```ruby
-= facebook_like_button  # require
+= facebook_like_button  # require facebook_app_id
 = hatena_bookmark_button
 ```
 
