@@ -19,6 +19,7 @@ module Middleman
 
       def hatena_bookmark_button(_site_url = nil, _site_title = nil)
         _site_url ||= site_url
+        _site_url += "/#{current_article.url}" if is_blog_article?
         _site_title ||= site_title
         %Q|<a href="http://b.hatena.ne.jp/entry/#{_site_url.sub(/^http[s]?:\/\//, '')}" class="hatena-bookmark-button" data-hatena-bookmark-title="#{_site_title}" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="ja" title="このエントリーをはてなブックマークに追加">
           <img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" />
