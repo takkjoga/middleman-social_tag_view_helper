@@ -61,6 +61,15 @@ module Middleman
 </div>|
       end
       
+      def twitter_share_button(_twitter_user_name = nil)
+        _twitter_user_name ||= twitter_user_name if twitter_user_name
+        account = if _twitter_user_name
+                    " data-via=\"#{_twitter_user_name}\""
+                  else
+                    nil
+                  end
+        %Q* <a href="https://twitter.com/share" class="twitter-share-button"{count}#{account}>Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>*
+      end
     end
   end
 end
