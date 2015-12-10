@@ -32,10 +32,9 @@ module Middleman
         %Q|<meta property="fb:app_id" content="#{_facebook_app_id}" />|
       end
 
-      def facebook_share_button(_facebook_app_id = nil)
+      def facebook_sdk(_facebook_app_id = nil)
+        @facebook_sdk_already_use = true
         _facebook_app_id ||= facebook_app_id
-        _site_url = site_url
-        _site_url += "/#{current_article.url}" if is_blog_article?
         %Q|<script>
   window.fbAsyncInit = function() {
     FB.init({
@@ -52,13 +51,21 @@ module Middleman
      js.src = "//connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
-</script>
-        
-<div
+</script>|
+      end
+
+      def facebook_share_button(_facebook_app_id: nil)
+        output = ""
+        output = facebook_sdk(_facebook_app_id) unless @facebook_sdk_already_use
+
+        _site_url = site_url
+        _site_url += "/#{current_article.url}" if is_blog_article?
+        output += %Q|<div
   class="fb-share-button"
   data-href="#{site_url}/#{current_article.url}"
   data-layout="button_count">
 </div>|
+        output
       end
       
       def twitter_share_button(_twitter_user_name = nil)
@@ -69,6 +76,17 @@ module Middleman
                     nil
                   end
         %Q* <a href="https://twitter.com/share" class="twitter-share-button"{count}#{account}>Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>*
+      end
+
+      def facebook_comment(_facebook_app_id: nil, _comment_count: nil)
+        output = ""
+        output = facebook_sdk(_facebook_app_id) unless @facebook_sdk_already_use
+
+        _site_url = site_url
+        _site_url += "/#{current_article.url}" if is_blog_article?
+        _comment_count ||= facebook_comment_count if self.try(:facebook_comment_count)
+        _comment_count ||= 5
+        %Q|<div class="fb-comments" data-href="#{_site_url}" data-numposts="#{_comment_count}"></div>|
       end
     end
   end
