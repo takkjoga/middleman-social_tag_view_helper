@@ -1,13 +1,21 @@
 module Middleman
   module SocialTagViewHelper
     module Helper
+      def current_url
+        current_path.sub(/index\.html/, "")
+      end
+
+      def top_page?
+        current_path == ''
+      end
+
       def open_graph_meta_tag(page_type: "website", page_title: nil, page_image: nil, _site_url: nil, _site_title: nil, _site_description: nil)
         _site_url ||= site_url
         _site_title ||= site_title
         _site_description ||= site_description
-        if is_blog_article?
+        unless top_page?
           page_type = "article"
-          _site_url += "/#{current_article.url}"
+          _site_url += "/#{current_url}"
         end
         %Q|<meta property="og:type" content="#{page_type}">
 <meta property="og:url" content="#{_site_url}">
@@ -19,7 +27,7 @@ module Middleman
 
       def hatena_bookmark_button(_site_url = nil, _site_title = nil)
         _site_url ||= site_url
-        _site_url += "/#{current_article.url}" if is_blog_article?
+        _site_url += "/#{current_url}" unless top_page?
         _site_title ||= site_title
         %Q|<a href="http://b.hatena.ne.jp/entry/#{_site_url.sub(/^http[s]?:\/\//, '')}" class="hatena-bookmark-button" data-hatena-bookmark-title="#{_site_title}" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="ja" title="このエントリーをはてなブックマークに追加">
           <img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" />
@@ -59,10 +67,10 @@ module Middleman
         output = facebook_sdk(_facebook_app_id) unless @facebook_sdk_already_use
 
         _site_url = site_url
-        _site_url += "/#{current_article.url}" if is_blog_article?
+        _site_url += "/#{current_url}" unless top_page?
         output += %Q|<div
   class="fb-share-button"
-  data-href="#{site_url}/#{current_article.url}"
+  data-href="#{site_url}"
   data-layout="button_count">
 </div>|
         output
@@ -75,7 +83,7 @@ module Middleman
                   else
                     nil
                   end
-        %Q* <a href="https://twitter.com/share" class="twitter-share-button"{count}#{account}>Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>*
+        %Q*<a href="https://twitter.com/share" class="twitter-share-button"{count}#{account}>Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>*
       end
 
       def facebook_comment(_facebook_app_id: nil, _comment_count: nil)
@@ -83,7 +91,7 @@ module Middleman
         output = facebook_sdk(_facebook_app_id) unless @facebook_sdk_already_use
 
         _site_url = site_url
-        _site_url += "/#{current_article.url}" if is_blog_article?
+        _site_url += "/#{current_url}" unless top_page?
         _comment_count ||= facebook_comment_count if self.try(:facebook_comment_count)
         _comment_count ||= 5
         %Q|<div class="fb-comments" data-href="#{_site_url}" data-numposts="#{_comment_count}"></div>|
